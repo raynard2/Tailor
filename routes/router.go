@@ -3,11 +3,13 @@ package routes
 
 
 import (
-
+	"Mlops/config"
 	"Mlops/controller"
 	"Mlops/db"
 	"Mlops/lib"
 	"Mlops/model"
+
+	"github.com/labstack/echo/middleware"
 
 	"log"
 
@@ -19,7 +21,7 @@ import (
 )
 
 
-
+var SignedKey = config.GetHmacSignKey()
 
 
 
@@ -70,12 +72,28 @@ func New () *echo.Echo {
 
 	e := echo.New()
 	api := e.Group("/v1")
+	authGroup := api.Group("/oauth")
+	adminGroup := e.Group("admin")
+
+	//middlewares
+	// admin log middleware
+	adminGroup.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+		Format: `[${time_rfc3339_nano} ${status} ${latency_human} ${uri} ${remote_ip} ${method}] +\n`,
+	}))
+	// jwt config middleware
+	authGroup.Use(middleware.JWTWithConfig(middleware.JWTConfig{
+		SigningMethod:	"HS512",
+		SigningKey: SignedKey,
+	}))
+
+
 
 
 	e.GET("/index", controller.Home)
-	e.POST("/login", controller.Login)
+	authGroup.POST("/login", controller.Login)
+
 	e.POST("/create", createModel)
-	api.GET("/getusers", getModel)
+	adminGroup.GET("/getusers", getModel)
 
 
 	return e
