@@ -3,12 +3,13 @@ package db
 import (
 	"Mlops/model"
 	"github.com/jinzhu/gorm"
-	"github.com/labstack/echo"
 )
 
 var db *gorm.DB
 
-func DatabaseInit (next echo.HandlerFunc) echo.HandlerFunc {
+
+
+func DatabaseInt (){
 	db, err := gorm.Open("sqlite3", "./database/database.db")
 	if err != nil {
 		panic("error opening db")
@@ -17,13 +18,10 @@ func DatabaseInit (next echo.HandlerFunc) echo.HandlerFunc {
 
 	db.AutoMigrate(&model.User{})
 
-	return func(c echo.Context) error {
 
-		return next(c)
-	}
 }
 
-func DbManager() *gorm.DB {
+func Manager() *gorm.DB {
 	return db
 
 }
