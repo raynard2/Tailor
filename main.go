@@ -2,15 +2,16 @@ package main
 
 import (
 	//"Mlops/db"
+	"Mlops/db"
 	"Mlops/routes"
 
 )
 
 
 func main() {
-routes.Dbinit()
+	db.DatabaseInt()
 	e := routes.New()
 
-	e.Logger.Fatal(e.Start(":1111"))
+	e.Logger.Fatal(e.Start(":8080"))
 
 }

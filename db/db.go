@@ -6,11 +6,11 @@ import (
 )
 
 var db *gorm.DB
-
+var err error
 
 
 func DatabaseInt (){
-	db, err := gorm.Open("sqlite3", "./database/database.db")
+	db, err = gorm.Open("sqlite3", "./test.db")
 	if err != nil {
 		panic("error opening db")
 	}
@@ -20,6 +20,10 @@ func DatabaseInt (){
 
 
 }
+
+
+
+
 
 func Manager() *gorm.DB {
 	return db
