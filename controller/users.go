@@ -13,7 +13,7 @@ import (
 
 func Login(c echo.Context) error {
 	db := db.Manager()
-	db,_  = gorm.Open("sqlite3", "./test.db")
+	db, _ = gorm.Open("sqlite3", "./test.db")
 	defer db.Close()
 	params := new(userLib.LoginParams)
 	if err := c.Bind(params); err != nil {
@@ -33,7 +33,7 @@ func Login(c echo.Context) error {
 	}
 	c.JSON(http.StatusUnauthorized, "Correct Password")
 	c.SetCookie(userLib.CreateCookie(user))
-	rawtoken,token, err := userLib.GenerateToken(user)
+	rawtoken, token, err := userLib.GenerateToken(user)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, "error generating token for client")
 	}
@@ -41,15 +41,14 @@ func Login(c echo.Context) error {
 
 	response := userLib.LoginResponse{
 		Success: true,
-		User:    userLib.UserResponse{
+		User: userLib.UserResponse{
 			FullName: user.FullName,
-			Email: user.Email,
-			Active: true,
-			Channel: user.Email,
+			Email:    user.Email,
+			Active:   true,
+			Channel:  user.Email,
 		},
-		Token:   token,
+		Token: token,
 	}
 	log.Println(response)
 	return c.JSONPretty(200, response, "")
 }
-

@@ -8,7 +8,7 @@ import (
 	"Mlops/db"
 	"Mlops/lib"
 	"Mlops/model"
-	"github.com/dgrijalva/jwt-go"
+
 	"log"
 
 
@@ -72,7 +72,7 @@ func New () *echo.Echo {
 	api := e.Group("/v1")
 
 
-	e.GET("/token", controller.Home)
+	e.GET("/index", controller.Home)
 	e.POST("/login", controller.Login)
 	e.POST("/create", createModel)
 	api.GET("/getusers", getModel)

@@ -9,7 +9,7 @@ var db *gorm.DB
 var err error
 
 
-func DatabaseInt (){
+func DatabaseInit (){
 	db, err = gorm.Open("sqlite3", "./test.db")
 	if err != nil {
 		panic("error opening db")
@@ -17,8 +17,6 @@ func DatabaseInt (){
 	defer db.Close()
 
 	db.AutoMigrate(&model.User{})
-
-
 }
 
 

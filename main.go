@@ -9,7 +9,7 @@ import (
 
 
 func main() {
-	db.DatabaseInt()
+	db.DatabaseInit()
 	e := routes.New()
 
 	e.Logger.Fatal(e.Start(":8080"))
