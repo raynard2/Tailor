@@ -37,7 +37,7 @@ func GenerateToken (user *model.User) (*jwt.Token, string,error) {
 		"email": user.Email,
 		"user_id": user.ID,
 		"issued_at": time.Now(),
-		"expire_at": time.Now().Add(time.Hour * 72).Unix(),
+		"expire_at": time.Now().Add(time.Minute * 72).Unix(),
 	}
 	rawtoken := jwt.NewWithClaims(jwt.SigningMethodHS512, claims)
 
