@@ -23,4 +23,7 @@ func DatabaseInit (next echo.HandlerFunc) echo.HandlerFunc {
 	}
 }
 
+func DbManager() *gorm.DB {
+	return db
 
+}
