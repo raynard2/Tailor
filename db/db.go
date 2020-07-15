@@ -10,7 +10,7 @@ var err error
 
 
 func DatabaseInit (){
-	db, err = gorm.Open("sqlite3", "./test.db")
+	db, err = gorm.Open("sqlite3", "./database/database.db")
 	if err != nil {
 		panic("error opening db")
 	}

@@ -7,9 +7,6 @@ type UserResponse struct {
 	Active   bool   `json:"active"`
 }
 
-
-
-
 type LoginResponse struct {
 	User    UserResponse `json:"user"`
 	Token   string       `json:"token"`

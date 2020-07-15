@@ -11,11 +11,10 @@ import (
 
 var SignedKey = config.GetHmacSignKey()
 
-
-func GenerateToken (user *model.User) (*jwt.Token, string,error) {
+func GenerateToken(user *model.User) (*jwt.Token, string, error) {
 	claims := jwt.MapClaims{
-		"email": user.Email,
-		"user_id": user.ID,
+		"email":     user.Email,
+		"user_id":   user.ID,
 		"issued_at": time.Now(),
 		"expire_at": time.Now().Add(time.Minute * 72).Unix(),
 	}
@@ -24,16 +23,16 @@ func GenerateToken (user *model.User) (*jwt.Token, string,error) {
 	token, err := rawtoken.SignedString(SignedKey)
 	if err != nil {
 		log.Println("error generating token")
-		return  rawtoken,"",err
+		return rawtoken, "", err
 	}
-	log.Println(rawtoken)
-	return rawtoken,token,err
+	log.Println(token)
+	return rawtoken, token, err
 }
-func CreateCookie (user *model.User) *http.Cookie {
-	cookie := http.Cookie{
-		Name: "mlops",
-		Value: "mlops_id",
-		Expires: time.Now().Add(30 * time.Minute),
-	}
-	return &cookie
+func CreateCookie(user *model.User) *http.Cookie {
+	cookie := new(http.Cookie)
+	cookie.Name = "mlops_cookie"
+	cookie.Value = string(user.ID)
+	cookie.Expires = time.Now().Add(30 * time.Minute)
+
+	return cookie
 }

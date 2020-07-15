@@ -1,10 +1,9 @@
 package config
 
 import (
-	"os"
 	"github.com/tkanos/gonfig"
+	"os"
 )
-
 
 type Configuration struct {
 	DB_USERNAME       string
@@ -23,19 +22,17 @@ type Configuration struct {
 	SAAS_BASE         bool
 }
 
-
 func config() Configuration {
-	 var configFileName string
-	 configuration := Configuration{}
+	var configFileName string
+	configuration := Configuration{}
 
-
-	 if os.Getenv("GO_ENV") == "production" {
-		 configFileName = "prod.json"
-	 }else
-	 	{
+	if os.Getenv("GO_ENV") == "production" {
+		configFileName = "prod.json"
+	} else
+	{
 		configFileName = "prod.json"
 	}
-	gonfig.GetConf("config/"+configFileName,&configuration)
+	gonfig.GetConf("config/"+configFileName, &configuration)
 
 	return configuration
 }
@@ -44,7 +41,7 @@ func GetHmacKey() string {
 	config := config()
 	return config.APP_SECRET
 }
-func GetHmacSignKey()  []byte {
+func GetHmacSignKey() []byte {
 	config := config()
 	Secret := []byte(config.APP_SECRET)
 	return Secret

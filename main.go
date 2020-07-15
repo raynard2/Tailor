@@ -1,12 +1,9 @@
 package main
 
 import (
-	//"Mlops/db"
 	"Mlops/db"
 	"Mlops/routes"
-
 )
-
 
 func main() {
 	db.DatabaseInit()
