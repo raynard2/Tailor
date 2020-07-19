@@ -3,7 +3,6 @@ package routes
 import (
 	"Mlops/config"
 	"Mlops/controller"
-	"Mlops/lib"
 	//"net/http"
 
 	"github.com/labstack/echo/middleware"
@@ -33,7 +32,8 @@ func New() *echo.Echo {
 		SigningKey:    SignedKey,
 	}))
 	// cookie middleware
-	cookieGroup.Use(lib.CheckCookie)
+	//cookieGroup.Use(lib.CheckCookie)
+	//cookieGroup.Use(controller.IsAdmin)
 
 	api.GET("/index", controller.Home)
 	api.POST("/register", controller.CreateUser)

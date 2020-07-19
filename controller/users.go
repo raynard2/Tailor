@@ -5,6 +5,7 @@ import (
 	"Mlops/lib"
 	userLib "Mlops/lib/user"
 	"Mlops/model"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo"
 	"log"
@@ -50,8 +51,10 @@ func Login(c echo.Context) error {
 			Channel:  user.Email,
 		},
 		Token: token,
+		IsAdmin: user.IsAdmin,
 	}
-	log.Println(response)
+
+
 	return c.JSONPretty(200, response, "")
 }
 
@@ -62,30 +65,37 @@ func CreateUser(c echo.Context) error {
 	db, _ = gorm.Open("sqlite3", "./database/database.db")
 
 	defer db.Close()
+	params := new(userLib.CreateUserParams)
 
-	newUser := new(model.User)
 
-	if  err := c.Bind(newUser);err != nil {
+
+	if  err := c.Bind(params);err != nil {
 		log.Println("error binding params")
 		return err
 	}
 
-
-	exist := db.Where("email= ?", newUser.Email).Find(&newUser).RecordNotFound()
+	user := new(model.User)
+	exist := db.Where("email= ?", params.Email).Find(&user).RecordNotFound()
 	if exist == false{
 		return c.JSON(http.StatusConflict, "email exist already")
 	}
 
-	newUser.Password, _ = lib.CreateHashFromPassword(newUser.Password)
 
-	db.Save(&newUser)
+		user.FullName= params.FullName
+		user.Email =   params.Email
+		user.Password =  lib.CreateHashFromPassword(params.Password)
+		user.IsAdmin = params.IsAdmin
 
-	exist = db.Where("email= ?", newUser.Email).Find(&newUser).RecordNotFound()
+
+
+	db.Save(&user)
+
+	exist = db.Where("email= ?", user.Email).Find(&user).RecordNotFound()
 	if exist == true{
 		return c.JSON(http.StatusNotModified, "Error saving user details")
 	}
 
-	return c.JSONPretty(http.StatusCreated, newUser, "")
+	return c.JSONPretty(http.StatusCreated, user, "")
 }
 
 
@@ -138,4 +148,19 @@ var users []model.User
 	db.Find(&users)
 
 	return c.JSONPretty(http.StatusOK, users, "")
+}
+
+
+
+
+func IsAdmin(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		user := c.Get("user").(*jwt.Token)
+		claims := user.Claims.(jwt.MapClaims)
+		isAdmin := claims["is_admin"].(bool)
+		if isAdmin == false {
+			return echo.ErrUnauthorized
+		}
+		return next(c)
+	}
 }

@@ -10,5 +10,6 @@ type User struct {
 	Token     string `json:"token"`
 	Password  string `json:"password"`
 	Active    bool   `json:"active"`
+	IsAdmin   bool	 `json:"is_admin"`
 }
 
