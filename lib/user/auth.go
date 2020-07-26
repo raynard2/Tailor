@@ -11,10 +11,11 @@ import (
 
 var SignedKey = config.GetHmacSignKey()
 
-func GenerateToken(user *model.User) (*jwt.Token, string, error) {
+func GenerateToken(user *model.User) (string, error) {
 	claims := jwt.MapClaims{
 		"email":     user.Email,
 		"user_id":   user.ID,
+		"is_Admin":	user.IsAdmin,
 		"issued_at": time.Now(),
 		"expire_at": time.Now().Add(time.Minute * 72).Unix(),
 	}
@@ -23,10 +24,10 @@ func GenerateToken(user *model.User) (*jwt.Token, string, error) {
 	token, err := rawtoken.SignedString(SignedKey)
 	if err != nil {
 		log.Println("error generating token")
-		return rawtoken, "", err
+		return "", err
 	}
-	log.Println(token)
-	return rawtoken, token, err
+
+	return token, err
 }
 func CreateCookie(user *model.User) *http.Cookie {
 	cookie := new(http.Cookie)

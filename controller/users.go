@@ -5,6 +5,7 @@ import (
 	"Mlops/lib"
 	userLib "Mlops/lib/user"
 	"Mlops/model"
+	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo"
@@ -34,13 +35,13 @@ func Login(c echo.Context) error {
 	}
 	c.JSON(http.StatusAccepted, "Correct Password")
 	//create cookie
-	c.SetCookie(userLib.CreateCookie(user))
+	//c.SetCookie(userLib.CreateCookie(user))
 	//generate token
-	rawtoken, token, err := userLib.GenerateToken(user)
+	token, err := userLib.GenerateToken(user)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, "error generating token for client")
 	}
-	c.JSON(http.StatusOK, rawtoken)
+	log.Println(token)
 	//parse data into response structure
 	response := userLib.LoginResponse{
 		Success: true,
@@ -50,15 +51,12 @@ func Login(c echo.Context) error {
 			Active:   true,
 			Channel:  user.Email,
 		},
-		Token: token,
+		Token:   token,
 		IsAdmin: user.IsAdmin,
 	}
 
-
 	return c.JSONPretty(200, response, "")
 }
-
-
 
 func CreateUser(c echo.Context) error {
 	db := db.Manager()
@@ -67,50 +65,62 @@ func CreateUser(c echo.Context) error {
 	defer db.Close()
 	params := new(userLib.CreateUserParams)
 
-
-
-	if  err := c.Bind(params);err != nil {
+	if err := c.Bind(params); err != nil {
 		log.Println("error binding params")
 		return err
 	}
 
 	user := new(model.User)
 	exist := db.Where("email= ?", params.Email).Find(&user).RecordNotFound()
-	if exist == false{
+	if exist == false {
 		return c.JSON(http.StatusConflict, "email exist already")
 	}
 
-
-		user.FullName= params.FullName
-		user.Email =   params.Email
-		user.Password =  lib.CreateHashFromPassword(params.Password)
-		user.IsAdmin = params.IsAdmin
-
-
+	user.FullName = params.FullName
+	user.Email = params.Email
+	user.Password = lib.CreateHashFromPassword(params.Password)
+	user.IsAdmin = params.IsAdmin
 
 	db.Save(&user)
 
 	exist = db.Where("email= ?", user.Email).Find(&user).RecordNotFound()
-	if exist == true{
+	if exist == true {
 		return c.JSON(http.StatusNotModified, "Error saving user details")
 	}
 
 	return c.JSONPretty(http.StatusCreated, user, "")
 }
 
-
-
-
 func GetUsers(c echo.Context) error {
 	db := db.Manager()
 	db, _ = gorm.Open("sqlite3", "./database/database.db")
 	defer db.Close()
+	userContext := c.Get("user").(*jwt.Token)
+	claims := userContext.Claims.(jwt.MapClaims)
+	email := claims["email"]
+
+	fmt.Println("token: ", userContext.Raw)
+
+	user := new(model.User)
+
+	// Throws unauthorized error
+	exists := db.Where("email = ?", email).Find(&user).RecordNotFound()
+
+	if exists {
+		return c.JSONPretty(200, user, "error finding jwt")
+	}
+
+	isAdmin := claims["is_Admin"].(bool)
 	var users []model.User
+	if isAdmin == false {
+		fmt.Println("admin not authorized")
+			return echo.ErrUnauthorized
+	}
 	db.Find(&users)
 	return c.JSONPretty(200, users, "")
 }
 
-func DeleteUser(c echo.Context)	error {
+func DeleteUser(c echo.Context) error {
 	db := db.Manager()
 	db, _ = gorm.Open("sqlite3", "./database/database.db")
 	defer db.Close()
@@ -120,7 +130,7 @@ func DeleteUser(c echo.Context)	error {
 	if err := c.Bind(user); err != nil {
 		return c.String(http.StatusInternalServerError, "error binding params")
 	}
-	err := db.Delete(&user,"email= ?",user.Email)
+	err := db.Delete(&user, "email= ?", user.Email)
 
 	if err.RowsAffected < 1 {
 		log.Println("invalid user")
@@ -131,9 +141,6 @@ func DeleteUser(c echo.Context)	error {
 	return c.JSONPretty(http.StatusOK, users, "")
 }
 
-
-
-
 func DeleteUserPermanent(c echo.Context) error {
 	db := db.Manager()
 	db, _ = gorm.Open("sqlite3", "./database/database.db")
@@ -143,24 +150,10 @@ func DeleteUserPermanent(c echo.Context) error {
 
 	_ = db.Delete(&user)
 
-var users []model.User
+	var users []model.User
 
 	db.Find(&users)
 
 	return c.JSONPretty(http.StatusOK, users, "")
 }
 
-
-
-
-func IsAdmin(next echo.HandlerFunc) echo.HandlerFunc {
-	return func(c echo.Context) error {
-		user := c.Get("user").(*jwt.Token)
-		claims := user.Claims.(jwt.MapClaims)
-		isAdmin := claims["is_admin"].(bool)
-		if isAdmin == false {
-			return echo.ErrUnauthorized
-		}
-		return next(c)
-	}
-}
