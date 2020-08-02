@@ -13,13 +13,9 @@ import (
 
 var SignedKey = config.GetHmacSignKey()
 
-
 func New() *echo.Echo {
 
 	e := echo.New()
-
-
-	//cookieGroup := api.Group("/cookie")
 
 	e.Use(middleware.Logger()) // Logger
 	e.Use(middleware.Recover())
@@ -56,12 +52,20 @@ func New() *echo.Echo {
 	adminGroup.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
 		Format: `[${time_rfc3339_nano} ${status} ${latency_human} ${uri} ${remote_ip} ${method}] +\n`,
 	}))
-	//adminGroup.Use(controller.IsAdmin)
 	// admin api
 	adminGroup.GET("/getusers", controller.GetUsers)
 	adminGroup.DELETE("/deleteuser", controller.DeleteUser)
 	adminGroup.DELETE("/deleteusers", controller.DeleteUserPermanent)
+	adminGroup.PUT("/updateuser", controller.UpdateUser)
 
+	//ml models
+	modelGroup := api.Group("/models")
+	// ML models routes
+	modelGroup.POST("/model", controller.CreateModel)
+	modelGroup.GET("/models", controller.Models)
+	modelGroup.GET("/models/:model_id", controller.ViewRunningModel)
+	modelGroup.PATCH("/models/:model_id", controller.PausingARunningModel)
+	modelGroup.DELETE("/model/:model_id", controller.DeleteModel)
 
 	return e
 }

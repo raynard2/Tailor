@@ -20,7 +20,7 @@ func CheckCookie(next echo.HandlerFunc) echo.HandlerFunc {
 		if err := c.Bind(params); err != nil {
 			return c.String(http.StatusInternalServerError, "error binding params")
 		}
-		user := new(model.User)
+		user := new(models.User)
 		log.Println(params)
 		db.Where("email =?", params.Email).First(&user)
 		if user.ID == 0 {
@@ -39,9 +39,6 @@ func CheckCookie(next echo.HandlerFunc) echo.HandlerFunc {
 
 		return c.String(200, "Cookie Match")
 
-
 	}
 
 }
-
-

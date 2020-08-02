@@ -1,12 +1,12 @@
 {
-    "DB_USERNAME": "",
-    "DB_PASSWORD": "",
-    "DB_PORT": "",
-    "DB_HOST": "",
-    "APP_SECRET": "gMA}P'YPj*fXff4Z",
-    "DB_NAME": "",
-    "SAAS_BASE": true,
-    "MAILGUN_DOMAIN": "",
-    "MAILGUN_KEY": "",
-    "STREAMER_SERVER": ""
+  "DB_USERNAME": "raynardomongbale",
+  "DB_NAME": "mlops",
+  "DB_PASSWORD": "raynard",
+  "DB_PORT": "",
+  "DB_HOST": "",
+  "APP_SECRET": "gMA}P'YPj*fXff4Z",
+  "SAAS_BASE": true,
+  "MAILGUN_DOMAIN": "",
+  "MAILGUN_KEY": "",
+  "STREAMER_SERVER": ""
 }

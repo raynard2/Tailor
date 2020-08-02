@@ -22,7 +22,7 @@ type Configuration struct {
 	SAAS_BASE         bool
 }
 
-func config() Configuration {
+func GetConfig() Configuration {
 	var configFileName string
 	configuration := Configuration{}
 
@@ -38,11 +38,11 @@ func config() Configuration {
 }
 
 func GetHmacKey() string {
-	config := config()
+	config := GetConfig()
 	return config.APP_SECRET
 }
 func GetHmacSignKey() []byte {
-	config := config()
+	config := GetConfig()
 	Secret := []byte(config.APP_SECRET)
 	return Secret
 }

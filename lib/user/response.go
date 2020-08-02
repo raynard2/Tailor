@@ -11,5 +11,11 @@ type LoginResponse struct {
 	User    UserResponse `json:"user"`
 	Token   string       `json:"token"`
 	Success bool         `json:"success"`
-	IsAdmin   bool	 `json:"is_admin"`
+	IsAdmin bool         `json:"is_admin"`
+}
+
+type CreateUserResonse struct {
+	User    UserResponse `json:"user"`
+	Success bool         `json:"success"`
+	IsAdmin bool         `json:"is_admin"`
 }

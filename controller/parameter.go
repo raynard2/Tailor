@@ -1,7 +1,5 @@
 package controller
 
-
-
 // Update With Fields For Model Struct
 type CreateModelParams struct {
 	ModelName      string `json:"model_name"`
@@ -10,4 +8,3 @@ type CreateModelParams struct {
 	ModelType      string `json:"model_type"`
 	PredictionType string `json:"prediction_type"`
 }
-
